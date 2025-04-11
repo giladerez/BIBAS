@@ -13,3 +13,9 @@ BIBAS (Bayesian Networks Impact Factor Based on Analysis of Sensitivity) compute
 ```python
 from bibas.heatmap_plot import plot_bibas_heatmap
 plot_bibas_heatmap(model)
+
+## Example BIBAS Heatmap
+
+<p align="center">
+  <img src="examples/bibas_heatmap_example.png" width="600">
+</p>
