@@ -4,91 +4,124 @@ import seaborn as sns
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.models import BayesianNetwork
 from bibas.inference_utils import compute_bibas_pairwise, rank_sources_for_target
 
 
-def plot_binary_bibas_heatmap(model, operation="observe", filename=None):
+def plot_binary_bibas_heatmap(model, operation="observe", filename=None, title=None):
+    """
+    Plots a heatmap showing the BIBAS score from each source variable to each target variable
+    in a fully binary Bayesian Network.
+
+    Parameters:
+        model: DiscreteBayesianNetwork – a BN with only binary variables
+        operation: str – 'observe' (default) uses evidence; 'do' uses intervention (do-calculus)
+        filename: str – if provided, saves the plot to file (PNG)
+        title: str – optional custom title for the heatmap
+    """
     nodes = sorted(model.nodes())
 
-    # Validate that all variables are binary
+    # Validate that all variables in the network are binary
     for node in nodes:
         cpd = model.get_cpds(node)
         if cpd.variable_card != 2:
             raise ValueError(f"All nodes must be binary. Node '{node}' has {cpd.variable_card} states.")
 
-    # Compute BIBAS matrix
+    # Compute the BIBAS score from each source node to each target node
     bibas_matrix = pd.DataFrame(index=nodes, columns=nodes)
     for src in nodes:
         for tgt in nodes:
             if src == tgt:
-                bibas_matrix.loc[src, tgt] = np.nan
+                bibas_matrix.loc[src, tgt] = np.nan  # self-impact is visually excluded
             else:
-                score = compute_bibas_pairwise(model, src, tgt, target_positive_state=1, operation=operation)
-                bibas_matrix.loc[src, tgt] = score
+                try:
+                    score = compute_bibas_pairwise(model, src, tgt, target_positive_state=1, operation=operation)
+                    bibas_matrix.loc[src, tgt] = 0.0 if score is None else score  # treat invalid/undefined as 0
+                except:
+                    bibas_matrix.loc[src, tgt] = 0.0  # fallback in case of any inference error
+
     bibas_matrix = bibas_matrix.astype(float)
 
-    # Plot
+    # Create the heatmap
     n = len(nodes)
     fig, ax = plt.subplots(figsize=(1.2 * n, 1.1 * n))
     sns.heatmap(
         bibas_matrix,
-        annot=True,
-        fmt=".1f",
-        cmap='Reds',
+        annot=True,             # show score values in cells
+        fmt=".1f",              # one decimal point
+        cmap='Reds',            # white to red gradient
         square=True,
         linewidths=0.5,
         linecolor='white',
-        mask=np.eye(n, dtype=bool),
+        mask=np.eye(n, dtype=bool),  # mask diagonal
         cbar_kws={"label": "BIBAS Score", "shrink": 0.6},
         ax=ax
     )
 
-    # Add hatched diagonal
+    # Add hatched rectangles on the diagonal to visually indicate self-impact is excluded
     for i in range(n):
         rect = patches.Rectangle((i, i), 1, 1, hatch='///',
                                  fill=False, edgecolor='gray', linewidth=0)
         ax.add_patch(rect)
 
-    ax.set_title(f"BIBAS Factor (operation = '{operation}')", fontsize=14)
+    # Add title and labels
+    ax.set_title(title or f"BIBAS Factor (operation = '{operation}')", fontsize=14)
     ax.set_xlabel("Target Node")
     ax.set_ylabel("Source Node")
     plt.xticks(rotation=0)
     plt.yticks(rotation=0)
     plt.tight_layout()
 
+    # Output: either save to file or display interactively
     if filename:
         plt.savefig(filename, bbox_inches="tight", dpi=300)
+        plt.close()
     else:
         plt.show()
 
 
-def plot_ranked_sources_for_target(model, target, target_positive_state=1, operation="observe", filename=None):
-    df = rank_sources_for_target(model, target, target_positive_state, operation)
+def plot_ranked_sources_for_target(model, target, target_positive_state=1, operation="observe", filename=None, title=None):
+    """
+    Plot a horizontal bar chart ranking all sources by their BIBAS impact on a given binary target.
 
-    plt.figure(figsize=(10, 0.5 * len(df)))
-    sns.barplot(data=df, x="bibas_score", y="source", palette="Reds_r")
+    Parameters:
+        model: pgmpy Bayesian Network
+        target: str – target node (must be binary)
+        target_positive_state: int – which state is considered "positive"
+        operation: 'observe' or 'do'
+        filename: str – optional path to save the plot
+        title: str – optional custom plot title
+    """
+    try:
+        df = rank_sources_for_target(model, target, target_positive_state, operation)
 
-    plt.xlabel("BIBAS Score")
-    plt.ylabel("Source Node")
-    plt.title(f"BIBAS Ranking on Target: '{target}' (operation = '{operation}')")
+        plt.figure(figsize=(10, 0.5 * len(df)))
+        sns.barplot(data=df, x="bibas_score", y="source", hue="source", palette="Reds_r", legend=False)
 
-    # Annotate bars
-    for i, row in df.iterrows():
-        plt.text(row.bibas_score + 0.5, i, f"{row.bibas_score:.1f}", va='center')
+        plt.xlabel("BIBAS Score")
+        plt.ylabel("Source Node")
+        plt.title(title or f"BIBAS Ranking on Target: '{target}' (operation = '{operation}')")
 
-    plt.xlim(0, df["bibas_score"].max() * 1.1)
-    plt.tight_layout()
+        # Annotate bars with values
+        for i, row in df.iterrows():
+            plt.text(row.bibas_score + 0.5, i, f"{row.bibas_score:.1f}", va='center')
 
-    if filename:
-        plt.savefig(filename, bbox_inches="tight", dpi=300)
-    else:
-        plt.show()
+        plt.xlim(0, df["bibas_score"].max() * 1.1)
+        plt.tight_layout()
+
+        if filename:
+            plt.savefig(filename, bbox_inches="tight", dpi=300)
+            plt.close()
+        else:
+            plt.show()
+
+    except Exception as e:
+        print(f"[BIBAS Error] {e}")
 
 
 def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation="observe", filename=None):
-    if not isinstance(model, DiscreteBayesianNetwork):
-        raise ValueError("Input must be a pgmpy DiscreteBayesianNetwork.")
+    if not isinstance(model, BayesianNetwork):
+        raise ValueError("Input must be a pgmpy BayesianNetwork.")
 
     nodes = sorted(model.nodes())
     edges = model.edges()
