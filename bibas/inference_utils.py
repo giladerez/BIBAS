@@ -14,35 +14,37 @@ def compute_bibas_pairwise(model, source, target, target_positive_state=1, opera
             raise ValueError("Target must be binary")
 
         # Prior P(T=positive)
-        infer = VariableElimination(model)
-        prior = infer.query(variables=[target])
+        prior_infer = VariableElimination(model)
+        prior = prior_infer.query(variables=[target])
         p_t_pos = prior.values[target_positive_state]
 
         # Prior P(X=xi) for weighting
-        p_x = infer.query(variables=[source]).values
+        p_x = prior_infer.query(variables=[source]).values
+
+        # Choose inference engine
+        if operation == "observe":
+            infer = prior_infer
+        elif operation == "do":
+            infer = CausalInference(model)
+        else:
+            raise ValueError("operation must be 'observe' or 'do'")
 
         shifts = []
         for i in range(source_cpd.variable_card):
             if operation == "observe":
                 posterior = infer.query(variables=[target], evidence={source: i})
                 p_t_given_x = posterior.values[target_positive_state]
-
             elif operation == "do":
-                doer = CausalInference(model)
-                interventional = doer.do_inference(
-                    query=target, do={source: i}
-                )
+                interventional = infer.query(variables=[target], do={source: i})
                 p_t_given_x = interventional.values[target_positive_state]
 
-            else:
-                raise ValueError("operation must be 'observe' or 'do'")
-
-            shift = p_t_given_x - p_t_pos
-            shifts.append(p_x[i] * abs(shift))
+            shift = abs(p_t_given_x - p_t_pos)
+            shifts.append(p_x[i] * shift)
 
         return sum(shifts) * 100
 
     except Exception as e:
+        print(e)
         return None
 
 
