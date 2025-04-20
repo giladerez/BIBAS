@@ -3,20 +3,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.patches as patches
-from pgmpy.inference import VariableElimination
+from bibas.interface_utils import compute_bibas_pairwise
 
-def compute_bibas_pairwise(model, source, target):
-    infer = VariableElimination(model)
-    try:
-        p0 = infer.query(variables=[target], evidence={source: 0}).values[1]
-        p1 = infer.query(variables=[target], evidence={source: 1}).values[1]
-        return abs(p1 - p0) * 100
-    except:
-        return np.nan
-
-def plot_bibas_heatmap(model):
+def plot_binary_bibas_heatmap(model, operation="observe"):
+    """
+    Plot a BIBAS heatmap for a fully binary Bayesian Network.
+    
+    Parameters:
+        model: pgmpy.models.DiscreteBayesianNetwork
+        operation: 'observe' (default) or 'do'
+    """
     nodes = sorted(model.nodes())
-    n = len(nodes)
+
+    # Validate that all variables are binary
+    for node in nodes:
+        cpd = model.get_cpds(node)
+        if cpd.variable_card != 2:
+            raise ValueError(f"All nodes must be binary. Node '{node}' has {cpd.variable_card} states.")
 
     # Compute BIBAS matrix
     bibas_matrix = pd.DataFrame(index=nodes, columns=nodes)
@@ -25,10 +28,12 @@ def plot_bibas_heatmap(model):
             if src == tgt:
                 bibas_matrix.loc[src, tgt] = np.nan
             else:
-                bibas_matrix.loc[src, tgt] = compute_bibas_pairwise(model, src, tgt)
+                score = compute_bibas_pairwise(model, src, tgt, target_positive_state=1, operation=operation)
+                bibas_matrix.loc[src, tgt] = score
     bibas_matrix = bibas_matrix.astype(float)
 
     # Plot
+    n = len(nodes)
     fig, ax = plt.subplots(figsize=(1.2 * n, 1.1 * n))
     sns.heatmap(
         bibas_matrix,
@@ -49,7 +54,7 @@ def plot_bibas_heatmap(model):
                                  fill=False, edgecolor='gray', linewidth=0)
         ax.add_patch(rect)
 
-    ax.set_title("BIBAS Factor: Impact from Source to Target", fontsize=14)
+    ax.set_title(f"BIBAS Factor (operation = '{operation}')", fontsize=14)
     ax.set_xlabel("Target Node")
     ax.set_ylabel("Source Node")
     plt.xticks(rotation=0)
