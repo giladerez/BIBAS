@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from pgmpy.models import BayesianNetwork
-from bibas.interface_utils import compute_bibas_pairwise, rank_sources_for_target
+from bibas.inference_utils import compute_bibas_pairwise, rank_sources_for_target
 
 
 def plot_binary_bibas_heatmap(model, operation="observe", filename=None):
