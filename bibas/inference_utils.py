@@ -4,7 +4,16 @@ from pgmpy.inference import VariableElimination, CausalInference
 def compute_bibas_pairwise(model, source, target, target_positive_state=1, operation="observe"):
     """
     Compute the BIBAS score from source → target (target must be binary).
-    operation: 'observe' (default) uses inference; 'do' uses do-calculus (intervention)
+    
+    Parameters:
+        model: DiscreteBayesianNetwork
+        source: str – source variable
+        target: str – target variable (must be binary)
+        target_positive_state: int – the index of the 'positive' state in the target (default=1)
+        operation: 'observe' (default) or 'do'
+    
+    Returns:
+        float – BIBAS score (0–100), or None if computation fails
     """
     try:
         source_cpd = model.get_cpds(source)
@@ -15,13 +24,12 @@ def compute_bibas_pairwise(model, source, target, target_positive_state=1, opera
 
         # Prior P(T=positive)
         prior_infer = VariableElimination(model)
-        prior = prior_infer.query(variables=[target])
-        p_t_pos = prior.values[target_positive_state]
+        p_t_pos = prior_infer.query(variables=[target]).values[target_positive_state]
 
         # Prior P(X=xi) for weighting
         p_x = prior_infer.query(variables=[source]).values
 
-        # Choose inference engine
+        # Choose appropriate inference engine
         if operation == "observe":
             infer = prior_infer
         elif operation == "do":
@@ -32,11 +40,9 @@ def compute_bibas_pairwise(model, source, target, target_positive_state=1, opera
         shifts = []
         for i in range(source_cpd.variable_card):
             if operation == "observe":
-                posterior = infer.query(variables=[target], evidence={source: i})
-                p_t_given_x = posterior.values[target_positive_state]
-            elif operation == "do":
-                interventional = infer.query(variables=[target], do={source: i})
-                p_t_given_x = interventional.values[target_positive_state]
+                p_t_given_x = infer.query(variables=[target], evidence={source: i}).values[target_positive_state]
+            else:  # do
+                p_t_given_x = infer.query(variables=[target], do={source: i}).values[target_positive_state]
 
             shift = abs(p_t_given_x - p_t_pos)
             shifts.append(p_x[i] * shift)
@@ -44,7 +50,7 @@ def compute_bibas_pairwise(model, source, target, target_positive_state=1, opera
         return sum(shifts) * 100
 
     except Exception as e:
-        print(e)
+        print(f"[BIBAS Error] {e}")
         return None
 
 
