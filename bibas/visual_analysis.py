@@ -4,7 +4,7 @@ import seaborn as sns
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from pgmpy.models import BayesianNetwork
+from pgmpy.models import DiscreteBayesianNetwork
 from bibas.inference_utils import compute_bibas_pairwise, rank_sources_for_target
 
 
@@ -87,8 +87,8 @@ def plot_ranked_sources_for_target(model, target, target_positive_state=1, opera
 
 
 def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation="observe", filename=None):
-    if not isinstance(model, BayesianNetwork):
-        raise ValueError("Input must be a pgmpy BayesianNetwork.")
+if not isinstance(model, DiscreteBayesianNetwork):
+    raise ValueError("Input must be a pgmpy DiscreteBayesianNetwork.")
 
     nodes = sorted(model.nodes())
     edges = model.edges()
