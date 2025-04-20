@@ -87,8 +87,8 @@ def plot_ranked_sources_for_target(model, target, target_positive_state=1, opera
 
 
 def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation="observe", filename=None):
-if not isinstance(model, DiscreteBayesianNetwork):
-    raise ValueError("Input must be a pgmpy DiscreteBayesianNetwork.")
+    if not isinstance(model, DiscreteBayesianNetwork):
+        raise ValueError("Input must be a pgmpy DiscreteBayesianNetwork.")
 
     nodes = sorted(model.nodes())
     edges = model.edges()
