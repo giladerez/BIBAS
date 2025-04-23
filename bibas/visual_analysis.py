@@ -284,11 +284,11 @@ def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation=
         plt.title(title, fontsize=14)
     else:
         default_title = {
-            "none": "BN Visualization (simple)",
+            "none": "BN Visualization (Simple)",
             "blanket": f"BN Visualization (Markov Blanket of '{target}')",
-            "impacts": f"BN Visualization (Node Impacts on '{target}')",
+            "impacts": f"BN Visualization (Nodes Impact Over '{target}')",
             "edges": "BN Visualization (Edge Impacts)",
-            "edges_and_impacts": f"BN Visualization (Nodes and Edges Impact to '{target}')"
+            "edges_and_impacts": f"BN Visualization (Edges Impact & Nodes Impact Over '{target}')"
         }
         plt.title(default_title.get(type, f"BN Visualization ({type})"), fontsize=14)
 
