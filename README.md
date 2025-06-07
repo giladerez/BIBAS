@@ -8,7 +8,7 @@ Bayesian Networks with publication-quality layouts.
 
 ---
 
-## ✨ What’s inside (v0.2.0)
+## What’s inside (v0.2.0)
 
 | Area                      | Key objects (import paths)                                           |
 |---------------------------|-----------------------------------------------------------------------|
@@ -75,6 +75,18 @@ plot_bn(model, layout=hierarchy_layout_jittered, layout_kwargs={"seed": 4, "jitt
 ```
 
 ---
+| Function | Signature | Purpose |
+|----------|-----------|---------|
+| `compute_bibas_pairwise` | `compute_bibas_pairwise(model, operation='observe')` | Return a full node × node impact matrix (observe / do). |
+| `rank_sources_for_target` | `rank_sources_for_target(model, target, operation='observe')` | Rank all source nodes by their influence on a binary *target* state. |
+| `plot_binary_bibas_heatmap` | `plot_binary_bibas_heatmap(model, operation='observe', ax=None, **heatmap_kwargs)` | Draw an annotated heat-map of positive-state impacts. |
+| `plot_ranked_sources_for_target` | `plot_ranked_sources_for_target(model, target, operation='observe', top_n=10, ax=None, **bar_kwargs)` | Horizontal bar-plot of the top–N influential sources for a target. |
+| `plot_bn` | `plot_bn(model, layout='spring', type='blanket', target=None, operation='observe', ax=None, **layout_kwargs)` | Visualise the BN with optional blankets, impact colouring, or edge weights. |
+| `hierarchy_layout` | `hierarchy_layout(G)` | Top-down layers based on depth (ideal for DAGs). |
+| `reversed_hierarchy_layout` | `reversed_hierarchy_layout(G)` | Bottom-up view: deepest nodes appear at the top. |
+| `hierarchy_layout_jittered` | `hierarchy_layout_jittered(G, jitter_strength=0.4, seed=None)` | Hierarchical layout with horizontal jitter to reduce edge overlap. |
+| `radial_layout` | `radial_layout(G)` | Concentric rings by depth; emphasises symmetry and centrality. |
+
 
 ## 📝 API Reference (Concise)
 
