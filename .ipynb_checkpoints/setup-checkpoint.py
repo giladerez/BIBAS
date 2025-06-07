@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='bibas',
-    version='0.1.0',
+    version='0.1.1',
     description='Bayesian Networks Impact Factor Based on Analysis of Sensitivity',
     author='Gilad Erez',
     author_email='giladmatat@gmail.com',

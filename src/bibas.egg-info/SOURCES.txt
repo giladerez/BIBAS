@@ -1,0 +1,13 @@
+MANIFEST.in
+README.md
+pyproject.toml
+setup.py
+src/bibas/__init__.py
+src/bibas/extra_layouts.py
+src/bibas/inference_utils.py
+src/bibas/visual_analysis.py
+src/bibas.egg-info/PKG-INFO
+src/bibas.egg-info/SOURCES.txt
+src/bibas.egg-info/dependency_links.txt
+src/bibas.egg-info/requires.txt
+src/bibas.egg-info/top_level.txt
