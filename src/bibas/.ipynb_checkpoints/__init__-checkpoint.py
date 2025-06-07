@@ -1,4 +1,5 @@
 # bibas/__init__.py
+__version__ = "0.2.0"
 
 from .visual_analysis import (
     plot_binary_bibas_heatmap,

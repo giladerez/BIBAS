@@ -71,7 +71,7 @@ def plot_binary_bibas_heatmap(model, operation="observe", filename=None, title=N
     ax.set_title(title or f"BIBAS Factor (operation = '{operation}')", fontsize=14)
     ax.set_xlabel("Target Node")
     ax.set_ylabel("Source Node")
-    plt.xticks(rotation=0)
+    plt.xticks(rotation=30)
     plt.yticks(rotation=0)
     plt.tight_layout()
 
@@ -124,26 +124,35 @@ def plot_ranked_sources_for_target(model, target, target_positive_state=1, opera
         print(f"[BIBAS Error] {e}")
 
 
-def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation="observe", filename=None, title=None):
+def plot_bn(model, layout=nx.spring_layout, type="none", target=None,
+            operation="observe", filename=None, title=None, layout_kwargs=None):
     """
     Plot a Bayesian Network with optional BIBAS-based node/edge analysis.
 
     Parameters:
         model: pgmpy.models.DiscreteBayesianNetwork
-        layout: function
-        type: str
-        target: str (optional)
-        operation: str
-        filename: str (optional)
-        title: str (optional)
+        layout: function (layout function from NetworkX or custom)
+        type: str (one of "none", "blanket", "impacts", "edges", "edges_and_impacts")
+        target: str (optional, used for blanket/impact visualizations)
+        operation: str ("observe" or "do")
+        filename: str (optional, save path)
+        title: str (optional title for the plot)
+        layout_kwargs: dict (optional, kwargs to pass to the layout function)
     """
     if not isinstance(model, DiscreteBayesianNetwork):
         raise ValueError("Input must be a pgmpy DiscreteBayesianNetwork.")
 
+    if layout_kwargs is None:
+        layout_kwargs = {}
+
     nodes = sorted(model.nodes())
     edges = model.edges()
     G = nx.DiGraph(edges)
-    pos = layout(G, seed=42)
+
+    try:
+        pos = layout(G, **layout_kwargs)
+    except TypeError:
+        pos = layout(G)
 
     def is_binary(node):
         return model.get_cpds(node).variable_card == 2
@@ -213,7 +222,6 @@ def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation=
         if not target:
             raise ValueError("Target must be specified for type='edges_and_impacts'")
 
-        # Node impacts
         bibas_scores = {
             node: compute_bibas_pairwise(model, node, target, operation=operation)
             if node != target else None
@@ -232,7 +240,6 @@ def plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation=
                 node_colors[node] = (1, 1 - intensity, 1 - intensity)
                 node_labels[node] = f"{node}\n{score:.2f}"
 
-        # Edge impacts
         edge_scores = []
         for (src, tgt) in edges:
             score = compute_bibas_pairwise(model, src, tgt, operation=operation)
