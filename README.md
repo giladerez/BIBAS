@@ -13,12 +13,10 @@ Bayesian Networks with publication-quality layouts.
 | Area                      | Key objects (import paths)                                           |
 |---------------------------|-----------------------------------------------------------------------|
 | **Impact metrics**        | `bibas.inference_utils.compute_bibas_pairwise`  •  `rank_sources_for_target` |
-| **Heat- & bar-plots**     | `bibas.visual_analysis.plot_binary_bibas_heatmap`  •  `plot_ranked_sources_for_target` |
+| **Heatmap & bar-plots**   | `bibas.visual_analysis.plot_binary_bibas_heatmap`  •  `plot_ranked_sources_for_target` |
 | **Full BN visualisation** | `bibas.visual_analysis.plot_bn`  – 5 modes: *none · blanket · impacts · edges · edges_and_impacts* |
 | **Custom graph layouts**  | `bibas.extra_layouts`  (hierarchy, reversed hierarchy, jittered, radial) |
-| **Binary & intervention** | All metrics work with `operation="observe"` **or** `operation="do"` |
-
-All public symbols are re-exported in `bibas.__init__` — tip-autocomplete with `bibas.<tab>`.
+| **observation & intervention** | All metrics work with `operation="observe"` **or** `operation="do"` |
 
 ---
 
