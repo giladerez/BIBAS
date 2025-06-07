@@ -3,7 +3,7 @@ Quantify node-to-node impact, rank influential sources, and visualise
 Bayesian Networks with publication-quality layouts.
 
 <p align="center">
-  <!-- <img src="examples/asia_heatmap.png" width="650" /> -->
+  <img src="examples/asia_heatmap.png" width="650"/>
 </p>
 
 ---
@@ -68,6 +68,10 @@ plot_bn(model,
 | `reversed_hierarchy_layout`                     | Bottom‑up layers     | Trace effects backwards                 |
 | `hierarchy_layout_jittered`                     | Top‑down + jitter    | Reduce edge crowding in wide layers     |
 | `radial_layout`                                 | Concentric circles   | Show symmetry / centrality              |
+
+<p align="center">
+  <img src="examples/asia_edges_and_impacts.png" width="650" title="Asia Network with BIBAS values for edges and impacts on Dyspnea"/>
+</p>
 
 ```python
 from bibas.extra_layouts import hierarchy_layout_jittered
