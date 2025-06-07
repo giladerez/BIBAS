@@ -3,7 +3,7 @@ Quantify node-to-node impact, rank influential sources, and visualise
 Bayesian Networks with publication-quality layouts.
 
 <p align="center">
-  <img src="examples/asia_edges_and_impacts.png" width="650"/>
+  <img src="examples/asia_edges_and_impacts.png" width="500"/>
 </p>
 
 ---
