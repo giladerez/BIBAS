@@ -3,7 +3,7 @@ Quantify node-to-node impact, rank influential sources, and visualise
 Bayesian Networks with publication-quality layouts.
 
 <p align="center">
-  <!-- <img src="docs/_assets/bibas_heatmap_banner.png" width="650" /> -->
+  <!-- <img src="examples/asia_heatmap.png" width="650" /> -->
 </p>
 
 ---
@@ -75,6 +75,8 @@ plot_bn(model, layout=hierarchy_layout_jittered, layout_kwargs={"seed": 4, "jitt
 ```
 
 ---
+## 📝 Functionalities (for examples see Example Notebook ahead)
+
 | Function | Signature | Purpose |
 |----------|-----------|---------|
 | `compute_bibas_pairwise` | `compute_bibas_pairwise(model, operation='observe')` | Return a full node × node impact matrix (observe / do). |
@@ -86,18 +88,6 @@ plot_bn(model, layout=hierarchy_layout_jittered, layout_kwargs={"seed": 4, "jitt
 | `reversed_hierarchy_layout` | `reversed_hierarchy_layout(G)` | Bottom-up view: deepest nodes appear at the top. |
 | `hierarchy_layout_jittered` | `hierarchy_layout_jittered(G, jitter_strength=0.4, seed=None)` | Hierarchical layout with horizontal jitter to reduce edge overlap. |
 | `radial_layout` | `radial_layout(G)` | Concentric rings by depth; emphasises symmetry and centrality. |
-
-
-## 📝 API Reference (Concise)
-
-| Function / class                 | Purpose (see doc‑strings for full signature) |
-|----------------------------------|----------------------------------------------|
-| `compute_bibas_pairwise`         | Full node × node impact table (observe / do) |
-| `rank_sources_for_target`        | DataFrame ranking source nodes for a target  |
-| `plot_binary_bibas_heatmap`      | Annotated heat‑map of positive‑state impacts |
-| `plot_ranked_sources_for_target` | Horizontal bar‑plot of ranked impacts        |
-| `plot_bn`                        | BN visual with blankets / impacts / edges    |
-| `extra_layouts.*`                | Four custom layouts listed above             |
 
 ---
 
