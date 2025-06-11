@@ -108,7 +108,7 @@ See **`examples/asia_demo.ipynb`** for a fully reproducible walkthrough of every
 
 ---
 
-## Inference Utilities (`bibas.inference_utils`)
+## Inference Utilities
 
 ### compute_bibas_pairwise
 
@@ -161,13 +161,17 @@ Rank every node (except the **target**) by its BIBAS impact on that target.
 
 ```python
 from bibas.inference_utils import rank_sources_for_target
-df = rank_sources_for_target(model, "DISEASE")
+df = rank_sources_for_target(model,
+                            target="DISEASE"
+                            target_positive_state="yes",
+                            operation="observe"
+                            )
 df.head()
 ```
 
 ---
 
-## Visual Analysis (`bibas.visual_analysis`)
+## Visual Analysis
 
 ### plot_binary_bibas_heatmap
 
@@ -190,7 +194,10 @@ Plot a heatmap of the BIBAS score from every source to every target in a fully b
 
 ```python
 from bibas.visual_analysis import plot_binary_bibas_heatmap
-plot_binary_bibas_heatmap(model)
+plot_binary_bibas_heatmap(model,
+                          operation="do",
+                          title="My Network: BIBAS heat-map (do)"
+                          )
 ```
 
 ---
@@ -218,9 +225,13 @@ Plot a horizontal bar chart ranking all sources by their BIBAS impact on a given
 
 ```python
 from bibas.visual_analysis import plot_ranked_sources_for_target
-plot_ranked_sources_for_target(model, "DISEASE")
+plot_ranked_sources_for_target(model,
+                              target="DISEASE",
+                              target_positive_state="Yes",
+                              operation="observe",
+                              title="BIBAS (observe) scores for disease
+                              )
 ```
-
 ---
 
 ### plot_bn
@@ -259,7 +270,7 @@ plot_bn(model,
 
 ---
 
-## Extra Layouts (`bibas.extra_layouts`)
+## Extra Layouts
 
 ### hierarchy_layout
 
@@ -298,7 +309,14 @@ Return a bottom‑up hierarchical layout for a directed graph.
 
 - `dict` mapping node to `(x,y)` position.
 
+**Example**
+
+```python
+from bibas.extra_layouts import reversed_hierarchy_layout
+pos = reversed_hierarchy_layout(G)
+```
 ---
+
 
 ### hierarchy_layout_jittered
 
@@ -315,6 +333,16 @@ Hierarchical layout with a small random horizontal shift applied per layer.
 **Returns**
 
 - `dict` node‑position mapping.
+
+**Example**
+
+```python
+from bibas.extra_layouts import hierarchy_layout_jittered
+pos = hierarchy_layout_jittered(G,
+                                seed=4,
+                                jitter_strength=0.4
+                                )
+```
 
 ---
 
