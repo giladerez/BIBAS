@@ -154,7 +154,7 @@ Rank every node (except the **target**) by its BIBAS impact on that target.
 
 - **model** : `pgmpy.models.DiscreteBayesianNetwork` – A fitted Bayesian Network.  
 - **target** : `str` – Binary target node.  
-- **target_positive_state** : `int`, default `1` – Positive state index.  
+- **target_positive_state** : `int | str`, default `1` – Which state of the target is considered positive.  
 - **operation** : `{"observe","do"}`, default `"observe"` – Impact type to compute.
 
 **Returns**
