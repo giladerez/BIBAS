@@ -247,3 +247,241 @@ Hierarchy layout with horizontal noise to reduce overlap.
 Root nodes in the centre with children on concentric circles.
 
 ---
+
+
+## bibas.inference_utils
+
+### compute_bibas_pairwise
+
+compute_bibas_pairwise(model, source, target, target_positive_state=1, operation="observe")
+
+Compute the BIBAS score from a source node to a target node in a discrete Bayesian network.
+
+Parameters
+----------
+model : pgmpy.models.DiscreteBayesianNetwork
+    A fully specified and valid discrete Bayesian network model.
+
+source : str
+    The name of the source node.
+
+target : str
+    The name of the target node. Must be a binary variable (i.e., have exactly two states).
+
+target_positive_state : int or str, optional (default=1)
+    The state of the binary target considered "positive" — either its index (0 or 1) or state name.
+
+operation : {'observe', 'do'}, optional (default='observe')
+    Defines how the influence is measured:
+    - 'observe': computes shift in the distribution of the target under evidence.
+    - 'do': computes shift under intervention (using do-calculus).
+
+Returns
+-------
+float
+    A BIBAS score between 0 and 100, representing the influence magnitude.
+    Returns None if the score is undefined due to inference issues.
+
+Raises
+------
+ValueError
+    If the target variable is not binary, or the operation is invalid.
+
+---
+
+### rank_sources_for_target
+
+rank_sources_for_target(model, target, target_positive_state=1, operation="observe")
+
+Ranks all source nodes by their BIBAS score on a given binary target node.
+
+Parameters
+----------
+model : pgmpy.models.DiscreteBayesianNetwork
+    The Bayesian network model.
+
+target : str
+    Name of the target node (must be binary).
+
+target_positive_state : int, optional (default=1)
+    The state of the target considered "positive".
+
+operation : {'observe', 'do'}, optional (default='observe')
+    Method of influence quantification.
+
+Returns
+-------
+pandas.DataFrame
+    A DataFrame with columns ['source', 'bibas_score'], sorted in descending order.
+
+Raises
+------
+ValueError
+    If the target node is not binary.
+
+---
+
+## bibas.visual_analysis
+
+### plot_binary_bibas_heatmap
+
+plot_binary_bibas_heatmap(model, operation="observe", filename=None, title=None)
+
+Draws a heatmap of BIBAS scores between all pairs of nodes in a binary Bayesian network.
+
+Parameters
+----------
+model : DiscreteBayesianNetwork
+    A network in which all nodes are binary.
+
+operation : str, optional (default='observe')
+    Whether to use observational or interventional inference.
+
+filename : str or None, optional
+    If provided, the heatmap is saved to the file path instead of being displayed.
+
+title : str or None, optional
+    Custom plot title.
+
+Raises
+------
+ValueError
+    If any node in the network is not binary.
+
+---
+
+### plot_ranked_sources_for_target
+
+plot_ranked_sources_for_target(model, target, target_positive_state=1, operation="observe", filename=None, title=None)
+
+Displays a horizontal bar chart ranking each source node by its BIBAS score on a given target.
+
+Parameters
+----------
+model : DiscreteBayesianNetwork
+    The Bayesian network model.
+
+target : str
+    Binary target node name.
+
+target_positive_state : int, optional (default=1)
+    The state of the target considered "positive".
+
+operation : {'observe', 'do'}, optional (default='observe')
+    Method of influence quantification.
+
+filename : str or None, optional
+    File path to save the chart. If None, it is displayed.
+
+title : str or None, optional
+    Title of the plot.
+
+---
+
+### plot_bn
+
+plot_bn(model, layout=nx.spring_layout, type="none", target=None, operation="observe", filename=None, title=None, layout_kwargs=None)
+
+Plots a Bayesian network using different visual styles and layout options.
+
+Parameters
+----------
+model : DiscreteBayesianNetwork
+    The network to visualize.
+
+layout : callable, optional (default=nx.spring_layout)
+    Layout function, e.g., from NetworkX or from bibas.extra_layouts.
+
+type : str, optional (default='none')
+    Visualization mode: 'none', 'blanket', 'impacts', 'edges', 'edges_and_impacts'.
+
+target : str or None, optional
+    Required if type is 'blanket', 'impacts', or 'edges_and_impacts'.
+
+operation : {'observe', 'do'}, optional (default='observe')
+    Inference style used when visualizing impacts.
+
+filename : str or None, optional
+    If provided, the figure is saved to this path.
+
+title : str or None, optional
+    Custom title for the plot.
+
+layout_kwargs : dict or None, optional
+    Additional arguments passed to the layout function.
+
+Raises
+------
+ValueError
+    If the model is not a DiscreteBayesianNetwork, or if required arguments are missing or invalid.
+
+---
+
+## bibas.extra_layouts
+
+### hierarchy_layout
+
+hierarchy_layout(G)
+
+Returns a vertical hierarchy layout for a directed graph.
+
+Parameters
+----------
+G : networkx.DiGraph
+    The directed graph to layout.
+
+Returns
+-------
+dict
+    Mapping of nodes to (x, y) coordinates.
+
+---
+
+### reversed_hierarchy_layout
+
+reversed_hierarchy_layout(G)
+
+Same as hierarchy_layout, but with the vertical direction reversed.
+
+---
+
+### hierarchy_layout_jittered
+
+hierarchy_layout_jittered(G, jitter_strength=0.4, seed=None)
+
+Same as hierarchy_layout but adds a random horizontal jitter to reduce overlap.
+
+Parameters
+----------
+G : networkx.DiGraph
+    The directed graph to layout.
+
+jitter_strength : float, optional (default=0.4)
+    Maximum horizontal deviation.
+
+seed : int or None
+    Random seed for reproducibility.
+
+Returns
+-------
+dict
+    Mapping of nodes to (x, y) positions.
+
+---
+
+### radial_layout
+
+radial_layout(G)
+
+Arranges nodes in concentric circles based on depth from root nodes.
+
+Parameters
+----------
+G : networkx.DiGraph
+    Directed graph to layout.
+
+Returns
+-------
+dict
+    Mapping of nodes to (x, y) coordinates.
+
