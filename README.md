@@ -485,3 +485,72 @@ Returns
 dict
     Mapping of nodes to (x, y) coordinates.
 
+
+<!-- ==========  GLOBAL STYLES  ========== -->
+<style scoped>
+/* בסיס טיפוגרפיה - דומה ל-pandas docs */
+.bibas-doc              { font-family: "Helvetica Neue", Arial, sans-serif; color:#222; line-height:1.55; }
+.bibas-doc h1           { font-size:1.9rem; margin:1.5em 0 0.5em; }
+.bibas-doc h2           { font-size:1.4rem; margin:1.3em 0 0.4em; border-bottom:1px solid #e1e4e5; }
+.bibas-doc h3           { font-size:1.15rem; margin:1.1em 0 0.3em; }
+.bibas-doc code, .sig   { font-family:SFMono-Regular, Consolas, "Liberation Mono", monospace; color:#c92c2c; }
+.bibas-doc dl           { margin:0 0 1.2em 0; }
+.bibas-doc dt           { margin:0.3em 0 0; }
+.bibas-doc dd           { margin:0 0 0.6em 1.6em; }
+.bibas-doc table        { width:100%; border-collapse:collapse; }
+.bibas-doc th, td       { padding:0.25em 0.4em; vertical-align:top; }
+.bibas-doc th           { text-align:left; background:#f6f8fa; }
+.param-name             { color:#005cc5; }      /* שמות פרמטרים */
+.return-type            { color:#0969da; }
+.exc-name               { color:#d73a49; }
+</style>
+
+<div class="bibas-doc">
+
+# bibas.inference_utils
+
+## compute_bibas_pairwise
+<span class="sig">compute_bibas_pairwise(model, source, target, target_positive_state=1, operation="observe")</span>  
+Compute the BIBAS score from *source* to *target* in a discrete Bayesian network.
+
+### Parameters
+<dl>
+  <dt><span class="param-name">model</span> : <span class="return-type">pgmpy.models.DiscreteBayesianNetwork</span></dt>
+  <dd>A fully specified and validated discrete BN (<code>model.check_model()</code> already called).</dd>
+
+  <dt><span class="param-name">source</span> : <span class="return-type">str</span></dt>
+  <dd>Name of the source node.</dd>
+
+  <dt><span class="param-name">target</span> : <span class="return-type">str</span></dt>
+  <dd>Name of the target node – must be binary (exactly two states).</dd>
+
+  <dt><span class="param-name">target_positive_state</span> : <span class="return-type">int | str</span>, default&nbsp;1</dt>
+  <dd>Which state of the binary target is considered “positive”, by index (0/1) or by state-name.</dd>
+
+  <dt><span class="param-name">operation</span> : {<code>"observe"</code>,&nbsp;<code>"do"</code>}, default&nbsp;<code>"observe"</code></dt>
+  <dd>
+    • <code>"observe"</code> – influence via conditional evidence.<br>
+    • <code>"do"</code> – influence under an intervention (<em>do-calculus</em>).
+  </dd>
+</dl>
+
+### Returns
+<dl>
+  <dt><span class="return-type">float</span></dt>
+  <dd>BIBAS score scaled to 0–100 (higher = stronger influence).  
+      Returns <code>None</code> when the score is undefined.</dd>
+</dl>
+
+### Raises
+<dl>
+  <dt><span class="exc-name">ValueError</span></dt>
+  <dd>If the target is non-binary or <code>operation</code> is invalid.</dd>
+</dl>
+
+### Notes
+The score is a weighted average of absolute shifts in <em>P(target=positive)</em>,
+computed either observationally or interventionally.
+
+### Examples
+```python
+score = compute_bibas_pairwise(model, "X", "Y", operation="do")
