@@ -71,12 +71,6 @@ plot_bn(model,
 | `hierarchy_layout_jittered`                     | Top‑down + jitter    | Reduce edge crowding in wide layers     |
 | `radial_layout`                                 | Concentric circles   | Show symmetry / centrality              |
 
-
-```python
-from bibas.extra_layouts import hierarchy_layout_jittered
-plot_bn(model, layout=hierarchy_layout_jittered, layout_kwargs={"seed": 4, "jitter_strength": 0.4}, type="blanket", target="dysp")
-```
-
 ---
 ## 📝 Functionalities (for examples see Example Notebook ahead)
 
@@ -164,8 +158,7 @@ from bibas.inference_utils import rank_sources_for_target
 df = rank_sources_for_target(model,
                             target="DISEASE"
                             target_positive_state="yes",
-                            operation="observe"
-                            )
+                            operation="observe")
 df.head()
 ```
 
@@ -196,8 +189,7 @@ Plot a heatmap of the BIBAS score from every source to every target in a fully b
 from bibas.visual_analysis import plot_binary_bibas_heatmap
 plot_binary_bibas_heatmap(model,
                           operation="do",
-                          title="My Network: BIBAS heat-map (do)"
-                          )
+                          title="My Network: BIBAS heat-map (do)")
 ```
 
 ---
@@ -226,11 +218,10 @@ Plot a horizontal bar chart ranking all sources by their BIBAS impact on a given
 ```python
 from bibas.visual_analysis import plot_ranked_sources_for_target
 plot_ranked_sources_for_target(model,
-                              target="DISEASE",
+                              target="DISEASE",  
                               target_positive_state="Yes",
                               operation="observe",
-                              title="BIBAS (observe) scores for disease"
-                              )
+                              title="BIBAS (observe) scores for disease")
 ```
 ---
 
@@ -260,12 +251,11 @@ Visualise a Bayesian Network with optional BIBAS‑based node or edge colouring.
 ```python
 from bibas.visual_analysis import plot_bn
 plot_bn(model, 
-       layout=hierarchy_layout_jittered, 
-       layout_kwargs={"seed": 42, "jitter_strength": 0.4},
-       type="edges_and_impacts", 
-       target = target,
-       title = "Hierarchy Layout Jittered"
-      )
+        layout=hierarchy_layout_jittered, 
+        layout_kwargs={"seed": 42, "jitter_strength": 0.4},
+        type="edges_and_impacts", 
+        target = target,
+        title = "Hierarchy Layout Jittered")
 ```
 
 ---
@@ -339,9 +329,8 @@ Hierarchical layout with a small random horizontal shift applied per layer.
 ```python
 from bibas.extra_layouts import hierarchy_layout_jittered
 pos = hierarchy_layout_jittered(G,
-                                seed=4,
-                                jitter_strength=0.4
-                                )
+                                seed=42,
+                                jitter_strength=0.4)
 ```
 
 ---
