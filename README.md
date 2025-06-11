@@ -104,216 +104,204 @@ See **`examples/asia_demo.ipynb`** for a fully reproducible walkthrough of every
 <br>
 <br>
 
-# BIBAS API Reference
+# BIBAS API reference
 
 ## compute_bibas_pairwise
 
-compute_bibas_pairwise(**model**, **source**, **target**, \*, **target_positive_state**=1, **operation**="observe")
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+compute_bibas_pairwise(<strong>model</strong>, <strong>source</strong>, <strong>target</strong>, target_positive_state=1, operation="observe")
+</p>
 
-Compute the BIBAS score from **source** to **target** in a discrete Bayesian network.
+Compute the BIBAS influence score from a source node to a (binary) target.
 
-**Parameters**
+### Parameters  
+- **model** - `pgmpy.models.DiscreteBayesianNetwork`  
+  The Bayesian network.  
+- **source** - `str`  
+  Name of the source variable.  
+- **target** - `str`  
+  Name of the binary target variable.  
+- **target_positive_state** - `int | str`, default `1`  
+  Which state of the target is considered “positive”.  
+- **operation** - `{"observe", "do"}`, default `"observe"`  
+  Whether to measure observational or interventional impact.
 
-- **model** : pgmpy.models.DiscreteBayesianNetwork  
-  A fully specified discrete Bayesian network that already passed `model.check_model()`.
-- **source** : str  
-  Name of the source node.
-- **target** : str  
-  Name of the target node. Must be binary.
-- **target_positive_state** : int | str, default `1`  
-  State of the binary target considered positive. Either its index (`0` or `1`) or its state name.
-- **operation** : {"observe", "do"}, default `"observe"`  
-  Defines whether influence is calculated by conditional evidence or by intervention.
+### Returns  
+`float` - BIBAS score in the range 0-100.
 
-**Returns**
-
-- float - BIBAS score scaled to 0-100. Returns `None` when the score is undefined.
-
-**Raises**
-
-- ValueError - If the target is non binary or `operation` is invalid.
-
-**Example**
-
+### Example  
 ```python
-score = compute_bibas_pairwise(model, "X", "Y", operation="do")
+from bibas.inference_utils import compute_bibas_pairwise
+score = compute_bibas_pairwise(bn, "AGE", "DISEASE")
+print(f"AGE → DISEASE BIBAS: {score:.2f}")
 ```
 
 ---
 
 ## rank_sources_for_target
 
-rank_sources_for_target(**model**, **target**, \*, **target_positive_state**=1, **operation**="observe")
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+rank_sources_for_target(<strong>model</strong>, <strong>target</strong>, target_positive_state=1, operation="observe")
+</p>
 
-Rank every node (except **target**) by its BIBAS impact on that target.
+Rank every non-target node by its BIBAS impact on the given binary target.
 
-**Parameters**
+### Parameters  
+- **model** - `pgmpy.models.DiscreteBayesianNetwork`  
+- **target** - `str`  
+- **target_positive_state** - `int | str`, default `1`  
+- **operation** - `{"observe", "do"}`, default `"observe"`
 
-- **model** : pgmpy.models.DiscreteBayesianNetwork  
-  The Bayesian network.
-- **target** : str  
-  Binary target node.
-- **target_positive_state** : int | str, default `1`  
-  Positive state index or state name.
-- **operation** : {"observe", "do"}, default `"observe"`  
-  Influence definition, identical to `compute_bibas_pairwise`.
+### Returns  
+`pandas.DataFrame` with columns `source` and `bibas_score`, sorted descending.
 
-**Returns**
-
-- pandas.DataFrame - Columns `source` and `bibas_score`, sorted descending.
-
-**Raises**
-
-- ValueError - If **target** is not binary.
+### Example  
+```python
+from bibas.inference_utils import rank_sources_for_target
+df = rank_sources_for_target(bn, "DISEASE")
+print(df.head())
+```
 
 ---
 
 ## plot_binary_bibas_heatmap
 
-plot_binary_bibas_heatmap(**model**, \*, **operation**="observe", **filename**=None, **title**=None)
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+plot_binary_bibas_heatmap(<strong>model</strong>, operation="observe", filename=None, title=None)
+</p>
 
-Draw a heat map of pairwise BIBAS scores in an all binary Bayesian network.
+Draw a heat-map of pairwise BIBAS scores for a fully binary network.
 
-**Parameters**
+### Parameters  
+- **model** - `pgmpy.models.DiscreteBayesianNetwork`  
+- **operation** - `{"observe", "do"}`, default `"observe"`  
+- **filename** - `str | None`, default `None`  
+  Path to save the figure instead of showing it.  
+- **title** - `str | None`, default `None`
 
-- **model** : pgmpy.models.DiscreteBayesianNetwork  
-  All nodes must be binary.
-- **operation** : {"observe", "do"}, default `"observe"`  
-  Influence definition.
-- **filename** : str | None  
-  If provided, save the figure to this path. Otherwise display it.
-- **title** : str | None  
-  Custom plot title.
+### Returns  
+`None` - Displays or saves a figure.
 
-**Raises**
-
-- ValueError - If any node is non binary.
+### Example  
+```python
+from bibas.visual_analysis import plot_binary_bibas_heatmap
+plot_binary_bibas_heatmap(bn, operation="do")
+```
 
 ---
 
 ## plot_ranked_sources_for_target
 
-plot_ranked_sources_for_target(**model**, **target**, \*, **target_positive_state**=1, **operation**="observe", **filename**=None, **title**=None)
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+plot_ranked_sources_for_target(<strong>model</strong>, <strong>target</strong>, target_positive_state=1, operation="observe", filename=None, title=None)
+</p>
 
-Horizontal bar chart ranking sources by their BIBAS score on a binary target.
+Horizontal bar-chart of BIBAS scores toward one binary target.
 
-**Parameters**
+### Parameters  
+- **model** - `pgmpy.models.DiscreteBayesianNetwork`  
+- **target** - `str`  
+- **target_positive_state** - `int | str`, default `1`  
+- **operation** - `{"observe", "do"}`, default `"observe"`  
+- **filename** - `str | None`, default `None`  
+- **title** - `str | None`, default `None`
 
-- **model** : pgmpy.models.DiscreteBayesianNetwork  
-  The network.
-- **target** : str  
-  Binary target node.
-- **target_positive_state** : int | str, default `1`  
-  Positive state index or state name.
-- **operation** : {"observe", "do"}, default `"observe"`  
-  Influence definition.
-- **filename** : str | None  
-  Optional save path.
-- **title** : str | None  
-  Optional plot title.
+### Returns  
+`None`
+
+### Example  
+```python
+from bibas.visual_analysis import plot_ranked_sources_for_target
+plot_ranked_sources_for_target(bn, "DISEASE")
+```
 
 ---
 
 ## plot_bn
 
-plot_bn(**model**, \*, **layout**=nx.spring_layout, **type**="none", **target**=None, **operation**="observe", **filename**=None, **title**=None, **layout_kwargs**=None)
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+plot_bn(<strong>model</strong>, layout=nx.spring_layout, type="none", target=None, operation="observe", filename=None, title=None)
+</p>
 
-Visualise a Bayesian network with optional BIBAS based colouring.
+Versatile NetworkX-based visualisation of the Bayesian network with optional BIBAS overlays.
 
-**Parameters**
+### Parameters  
+- **model** - `pgmpy.models.DiscreteBayesianNetwork`  
+- **layout** - `callable`, default `nx.spring_layout`  
+- **type** - `{"none", "blanket", "impacts", "edges", "edges_and_impacts"}`, default `"none"`  
+- **target** - `str | None`, default `None`  
+- **operation** - `{"observe", "do"}`, default `"observe"`  
+- **filename** - `str | None`, default `None`  
+- **title** - `str | None`, default `None`
 
-- **model** : pgmpy.models.DiscreteBayesianNetwork  
-  Network to draw.
-- **layout** : callable, default `nx.spring_layout`  
-  Layout function (NetworkX or `bibas.extra_layouts`).
-- **type** : {"none", "blanket", "impacts", "edges", "edges_and_impacts"}, default `"none"`  
-  Visual style.
-- **target** : str | None  
-  Required when **type** uses blanket or impact information.
-- **operation** : {"observe", "do"}, default `"observe"`  
-  Influence definition for impact modes.
-- **filename** : str | None  
-  File path to save the figure.
-- **title** : str | None  
-  Plot title.
-- **layout_kwargs** : dict | None  
-  Extra arguments passed to **layout**.
+### Returns  
+`None`
 
-**Raises**
-
-- ValueError - For invalid **type**, missing **target**, or non discrete model.
+### Example  
+```python
+from bibas.visual_analysis import plot_bn
+plot_bn(bn, type="blanket", target="DISEASE")
+```
 
 ---
 
 ## hierarchy_layout
 
-hierarchy_layout(**G**)
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+hierarchy_layout(<strong>G</strong>)
+</p>
 
-Return a vertical hierarchy layout for a directed graph.
+Produce top-down coordinates for hierarchical drawing.
 
-**Parameters**
+### Parameters  
+- **G** - `networkx.DiGraph`
 
-- **G** : networkx.DiGraph  
-  Directed graph to layout.
+### Returns  
+`dict` mapping node → (x, y) coordinates.
 
-**Returns**
-
-- dict - Mapping of nodes to `(x, y)` coordinates.
+### Example  
+```python
+pos = hierarchy_layout(G)
+```
 
 ---
 
 ## reversed_hierarchy_layout
 
-reversed_hierarchy_layout(**G**)
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+reversed_hierarchy_layout(<strong>G</strong>)
+</p>
 
-Same as `hierarchy_layout` but flipped vertically (roots at the bottom).
+Bottom-up variant of `hierarchy_layout`.
 
-**Parameters**
+### Parameters  
+- **G** - `networkx.DiGraph`
 
-- **G** : networkx.DiGraph  
-  Directed graph to layout.
+### Returns  
+`dict` of positions.
 
-**Returns**
-
-- dict - Mapping of nodes to `(x, y)` coordinates.
-
----
-
-## hierarchy_layout_jittered
-
-hierarchy_layout_jittered(**G**, \*, **jitter_strength**=0.4, **seed**=None)
-
-Hierarchy layout with random horizontal jitter to reduce edge overlap.
-
-**Parameters**
-
-- **G** : networkx.DiGraph  
-  Directed graph to layout.
-- **jitter_strength** : float, default `0.4`  
-  Maximum horizontal shift per layer.
-- **seed** : int | None  
-  Random seed for reproducible jitter.
-
-**Returns**
-
-- dict - Mapping of nodes to `(x, y)` coordinates.
+### Example  
+```python
+pos = reversed_hierarchy_layout(G)
+```
 
 ---
 
 ## radial_layout
 
-radial_layout(**G**)
+<p style="font-family:SFMono-Regular,Consolas,Menlo,monospace;font-size:90%">
+radial_layout(<strong>G</strong>)
+</p>
 
-Place root nodes at the centre and children on concentric circles.
+Arrange nodes in concentric circles by depth.
 
-**Parameters**
+### Parameters  
+- **G** - `networkx.DiGraph`
 
-- **G** : networkx.DiGraph  
-  Directed graph to layout.
+### Returns  
+`dict` of node positions.
 
-**Returns**
-
-- dict - Mapping of nodes to `(x, y)` coordinates.
-
----
-
+### Example  
+```python
+pos = radial_layout(G)
+```
