@@ -229,7 +229,7 @@ plot_ranked_sources_for_target(model,
                               target="DISEASE",
                               target_positive_state="Yes",
                               operation="observe",
-                              title="BIBAS (observe) scores for disease
+                              title="BIBAS (observe) scores for disease"
                               )
 ```
 ---
