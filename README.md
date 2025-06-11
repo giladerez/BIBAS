@@ -100,11 +100,14 @@ See **`examples/asia_demo.ipynb`** for a fully reproducible walkthrough of every
 
 
 <br>
-
----
-
+<br>
 <br>
 
+***
+
+<br>
+<br>
+<br>
 
 ## Function references
 
