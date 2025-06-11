@@ -106,10 +106,6 @@ See **`examples/asia_demo.ipynb`** for a fully reproducible walkthrough of every
 
 # BIBAS API Reference
 
-This page documents the public functions provided by the **BIBAS** package  
-( *Bayesian-network Impact factor Based on Analysis of Sensitivity* ).  
-The layout and style follow the reference format used by the pandas API docs.  
-
 ---
 
 ## Inference Utilities (`bibas.inference_utils`)
@@ -252,7 +248,13 @@ Visualise a Bayesian Network with optional BIBAS‑based node or edge colouring.
 
 ```python
 from bibas.visual_analysis import plot_bn
-plot_bn(model, type="blanket", target="DISEASE")
+plot_bn(model, 
+       layout=hierarchy_layout_jittered, 
+       layout_kwargs={"seed": 42, "jitter_strength": 0.4},
+       type="edges_and_impacts", 
+       target = target,
+       title = "Hierarchy Layout Jittered"
+      )
 ```
 
 ---
