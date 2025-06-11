@@ -97,9 +97,14 @@ plot_bn(model, layout=hierarchy_layout_jittered, layout_kwargs={"seed": 4, "jitt
 ## Example Notebook  
 See **`examples/asia_demo.ipynb`** for a fully reproducible walkthrough of every functionality in this README.
 
-***
 
-## Function reference
+
+---
+***
+---
+
+
+## Function references
 
 ### `bibas.inference_utils`
 
